@@ -48,7 +48,7 @@ func TestWheelTimer_Tick(t *testing.T) {
 	}
 }
 
-func BenchmarkWheelTimer(b *testing.B) {
+func BenchmarkWheelTimer_drain(b *testing.B) {
 	maxInterval := 20
 	timer := New(maxInterval)
 
@@ -59,6 +59,25 @@ func BenchmarkWheelTimer(b *testing.B) {
 
 		for node := timer.Tick(); node != nil; node = node.Next {
 		}
+	}
+}
+
+func BenchmarkWheelTimer_fill(b *testing.B) {
+	maxInterval := 20
+	timer := New(maxInterval)
+
+	for i := 0; i < b.N; i++ {
+		timer.Schedule(i%maxInterval, (i % maxInterval))
+	}
+}
+
+func BenchmarkWheelTimer_fast(b *testing.B) {
+	maxInterval := 20
+	timer := New(maxInterval)
+
+	for i := 0; i < b.N; i++ {
+		timer.Schedule(i%maxInterval, (i % maxInterval))
+		timer.Tick()
 	}
 }
 
